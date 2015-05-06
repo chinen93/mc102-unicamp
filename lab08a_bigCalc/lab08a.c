@@ -10,15 +10,6 @@
 #define TRUE 1
 #define FALSE 0
 
-void printVetor(int *vetor, int tam){
-  int i;
-  printf("[");
-  for(i=0; i<tam; i++){
-    printf("%d;", *(vetor+i));
-  }
-  printf("]\n");
-}
-
 int vetorNulo(int *vetor, int tam){
   int i;
   for(i=0; i<tam; i++)
@@ -123,33 +114,41 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
 
 /* realiza a multiplicacao n1*n2, armazendo o resultado em result */
 void multiply(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
-    /*
-      int i, j;
-      int pos1, pos2, posR;
-      int aux[1] = {1};
-
-      pos2=tam_n2-1;
-      posR=tam_n1+tam_n2-1;
-
-      while(!vetorNulo(n2, tam_n2)){ 
-      add(result, tam_n1+tam_n2-1, n1, tam_n1, result);
-      substract(n2, tam_n2, aux, 1, n2);
-      }
-    */
-    int i, j;
+    int i, j, k;
     int pos1, pos2, posR;
 
     pos2=tam_n2-1;
- 
+
+    /* Multiplica cada posicao de n2 por cada posicao de n1 */
     for(i=0; i<tam_n2; i++){
 	pos1=tam_n1-1;
 	posR=tam_n1+tam_n2-1-i;
-	for(j=0; j<tam_n2; j++){
+	/* fixa n2 e percorre n1  */
+	for(j=0; j<tam_n1; j++){
+	    /* caso a multiplicao seja maior que 9
+	       deixar apenas o ultimo digito posicao do resultado
+	       e mover a outra para a proxima posicao
+	    */
 	    if(*(n1+pos1) * *(n2+pos2) > 9){
 		*(result+posR) += (*(n1+pos1) * *(n2+pos2))%10;
 		*(result+posR-1) += (*(n1+pos1) * *(n2+pos2))/10;
 	    }else
 		*(result+posR) += *(n1+pos1) * *(n2+pos2);
+
+	    /* caso a soma da posicao com o ultimo digito da multiplicacao
+	       seja maior que 9
+	       deixar o ultimo digito da soma
+	       e colocar o outro digito na proxima posicao
+	    */
+	    for(k=0; k<tam_n1+tam_n2; k++){
+		if(*(result+posR-k) > 9){
+		    *(result+posR-k) = *(result+posR-k)%10;
+		    *(result+posR-1-k) += 1;
+		}else{
+		    break;
+		}
+	    }	    
+	    
 	    pos1--;
 	    posR--;
 	}
@@ -163,8 +162,7 @@ int main() {
   char comando;
   int i;
   char aux;
-
-  
+      
   scanf("%d %d %c", &tamX, &tamY, &comando);
   x=malloc(tamX * sizeof(int));
   for(i=0; i<tamX; i++){
@@ -202,7 +200,7 @@ int main() {
     printResultado(resultado, tamX+tamY);
     break;
   }
-  
+
   free(x);
   free(y);
   free(resultado);
