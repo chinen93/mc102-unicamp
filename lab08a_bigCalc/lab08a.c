@@ -123,19 +123,38 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
 
 /* realiza a multiplicacao n1*n2, armazendo o resultado em result */
 void multiply(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
-  int i, j, c=0;
-  int pos1, pos2, posR;
-  int aux[1] = {1};
+    /*
+      int i, j;
+      int pos1, pos2, posR;
+      int aux[1] = {1};
 
-  pos2=tam_n2-1;
-  posR=tam_n1+tam_n2-1;
+      pos2=tam_n2-1;
+      posR=tam_n1+tam_n2-1;
 
-  /*subtrair de um vetor ate ele ser 0*/
-  while(!vetorNulo(n2, tam_n2)){ 
-    /*enquanto isso adicionar n1 em resultado*/
-    add(result, tam_n1+tam_n2-1, n1, tam_n1, result);
-    substract(n2, tam_n2, aux, 1, n2);
-  }
+      while(!vetorNulo(n2, tam_n2)){ 
+      add(result, tam_n1+tam_n2-1, n1, tam_n1, result);
+      substract(n2, tam_n2, aux, 1, n2);
+      }
+    */
+    int i, j;
+    int pos1, pos2, posR;
+
+    pos2=tam_n2-1;
+ 
+    for(i=0; i<tam_n2; i++){
+	pos1=tam_n1-1;
+	posR=tam_n1+tam_n2-1-i;
+	for(j=0; j<tam_n2; j++){
+	    if(*(n1+pos1) * *(n2+pos2) > 9){
+		*(result+posR) += (*(n1+pos1) * *(n2+pos2))%10;
+		*(result+posR-1) += (*(n1+pos1) * *(n2+pos2))/10;
+	    }else
+		*(result+posR) += *(n1+pos1) * *(n2+pos2);
+	    pos1--;
+	    posR--;
+	}
+	pos2--;
+    }/*for(i=0; i<tam_n2; i++)*/
 }
 
 int main() {
