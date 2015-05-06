@@ -19,19 +19,29 @@ void printVetor(int *vetor, int tam){
   printf("]\n");
 }
 
+int vetorNulo(int *vetor, int tam){
+  int i;
+  for(i=0; i<tam; i++)
+    if(*(vetor+i) != 0)
+      return FALSE;
+
+  return TRUE;
+}
+
 void printResultado(int *vetor, int tam){
   int i, escreveu=FALSE;
-  
-  for(i=0; i<tam; i++){
-    /* nao escreve os 0 a esquerda  */
-    if (!(*(vetor+i) == 0 && !escreveu)){
-      printf("%d", *(vetor+i));
-      escreveu=TRUE;
-    }
-  }
-  
-  if(!escreveu)
+  if(vetorNulo(vetor, tam))
     printf("0");
+
+  else
+    for(i=0; i<tam; i++)
+      /* nao escreve os 0 a esquerda  */
+      if (!(*(vetor+i) == 0 && !escreveu)){
+	printf("%d", *(vetor+i));
+	escreveu=TRUE;
+      }
+  
+  
   
   printf("\n");
 }
@@ -114,16 +124,17 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
 /* realiza a multiplicacao n1*n2, armazendo o resultado em result */
 void multiply(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
   int i, j, c=0;
-  int pos1, pos2;
-  pos1=tam_n1-1;
-  pos2=tam_n2-1;
+  int pos1, pos2, posR;
+  int aux[1] = {1};
 
-  for(i=0; i<tam_n2; i++){
-    for(j=*(n2+pos2); j>0; j--){
-      c++;
-      printf("%d\n", c);
-      
-    }
+  pos2=tam_n2-1;
+  posR=tam_n1+tam_n2-1;
+
+  /*subtrair de um vetor ate ele ser 0*/
+  while(!vetorNulo(n2, tam_n2)){ 
+    /*enquanto isso adicionar n1 em resultado*/
+    add(result, tam_n1+tam_n2-1, n1, tam_n1, result);
+    substract(n2, tam_n2, aux, 1, n2);
   }
 }
 
@@ -146,7 +157,6 @@ int main() {
     scanf(" %c", &aux);
     *(y+i)= aux-'0';
   }
-  printf("--%c--\n\n",comando);
   switch(comando){
   case 'A':
     resultado=malloc((tamX+1) * sizeof(int));
