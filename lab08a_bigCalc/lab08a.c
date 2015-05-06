@@ -37,8 +37,8 @@ void printResultado(int *vetor, int tam){
     for(i=0; i<tam; i++)
       /* nao escreve os 0 a esquerda  */
       if (!(*(vetor+i) == 0 && !escreveu)){
-	printf("%d", *(vetor+i));
-	escreveu=TRUE;
+        printf("%d", *(vetor+i));
+        escreveu=TRUE;
       }
   
   
@@ -97,12 +97,12 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
     if(*(n1+pos1) < *(n2+pos2)){
       *(n1+pos1) += 10;
       for(j=1; j<tam_n1-i; j++){
-	if(*(n1+pos1-j) == 0)
-	  *(n1+pos1-j) = 9;
-	else{
-	  *(n1+pos1-j) =  *(n1+pos1-j)-1;
-	  break;
-	}
+        if(*(n1+pos1-j) == 0)
+          *(n1+pos1-j) = 9;
+        else{
+          *(n1+pos1-j) =  *(n1+pos1-j)-1;
+          break;
+        }
       }
     }/*if(*(n1+pos1) < *(n2+pos2))*/
 
