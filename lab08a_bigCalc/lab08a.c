@@ -38,15 +38,40 @@ void printResultado(int *vetor, int tam){
 
 /* realiza a adicao n1+n2, armazendo o resultado em result */
 void add(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
+  int i;
+  int pos1, pos2, posR;
+  pos1=tam_n1-1;
+  pos2=tam_n2-1;
+  posR=tam_n1;
+
+  /* somar as casas correspondentes */
+  for(i=0; i<tam_n2; i++){
+    /* se a soma for maior que 1 digito
+       colocar o ultimo digito na posicao atual
+       e incrementar a posicao a esquerda do resultado
+    */
+    if(*(n1+pos1) + *(n2+pos2) > 9){
+      *(result+posR) += (*(n1+pos1) + *(n2+pos2))%10;
+      *(result+posR-1) += 1;
+    }else{
+       *(result+posR) += *(n1+pos1) + *(n2+pos2);
+    }
+
+    pos1--;
+    pos2--;
+    posR--;
+  }/*for(i=0; i<tam_n2; i++)*/
+  for(i=0; i<tam_n1-tam_n2; i++){
+    *(result+posR) += *(n1+pos1);
+    pos1--;
+    posR--;
+  }
 }
 
 /* realiza a subtracao n1-n2, com n1>=n2, armazenando o resultado em result */
 void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
   int i, j;
   int pos1, pos2, posR;
-
-  printVetor(n1, tam_n1);
-  printVetor(n2, tam_n2);  
   pos1=tam_n1-1;
   pos2=tam_n2-1;
   posR=tam_n1-1;
@@ -58,10 +83,10 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
        se a posicao for 0 tranformar em 9
        e continuar procurando um valor diferente de 0
     */
+ 
     if(*(n1+pos1) < *(n2+pos2)){
-      printf("{%d %d}\n", pos1, tam_n1-i-1);
-      /*TODO a segunda vez não funciona*/
-      for(j=i+1; j<tam_n1-i-1; j++){
+      *(n1+pos1) += 10;
+      for(j=1; j<tam_n1-i; j++){
 	if(*(n1+pos1-j) == 0)
 	  *(n1+pos1-j) = 9;
 	else{
@@ -69,33 +94,37 @@ void substract(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
 	  break;
 	}
       }
-
-      *(n1+pos1) += 10;
-      printVetor(n2, tam_n2);
-      printVetor(n1, tam_n1);
     }/*if(*(n1+pos1) < *(n2+pos2))*/
 
     /* efetua a subtracao */
     *(result+posR) = *(n1+pos1) - *(n2+pos2); 
-
     pos1--;
     pos2--;
     posR--;
   }/*for(i=0; i<tam_n2; i++)*/
 
-  
   /* colocar as outras casa de n1 no resultado */
-  for(i=0; i<tam_n1-tam_n2-1; i++){
+  for(i=0; i<tam_n1-tam_n2; i++){
     *(result+posR) = *(n1+pos1);
     pos1--;
     posR--;
   }
-
-  printVetor(result, tam_n1);
 }
 
 /* realiza a multiplicacao n1*n2, armazendo o resultado em result */
 void multiply(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
+  int i, j, c=0;
+  int pos1, pos2;
+  pos1=tam_n1-1;
+  pos2=tam_n2-1;
+
+  for(i=0; i<tam_n2; i++){
+    for(j=*(n2+pos2); j>0; j--){
+      c++;
+      printf("%d\n", c);
+      
+    }
+  }
 }
 
 int main() {
@@ -130,7 +159,7 @@ int main() {
   case 'S':
     resultado=malloc(tamX * sizeof(int));
     for(i=0; i<tamX; i++){
-      /* *(resultado+i) = 0; */
+       *(resultado+i) = 0;
     }
     substract(x, tamX, y, tamY, resultado);
     printResultado(resultado, tamX);
