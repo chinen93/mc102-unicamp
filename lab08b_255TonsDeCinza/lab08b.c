@@ -151,9 +151,9 @@ void rotacao(int img[][MAX_TAM], int W, int H) {
 
     /* Rotacionar para a aux */
     /* aux[variavel][const] = img [const][variavel] */
-    for(y=0; y<W; y++){
-	for(x=0; x<H; x++){
-	    aux[x][y] = img[y][(W-1)-x];
+    for(y=0; y<H; y++){
+	for(x=0; x<W; x++){
+	    aux[(W-1)-x][y] = img[y][x];
 	}
     }
     /* Passar para a normal */
@@ -164,7 +164,7 @@ void rotacao(int img[][MAX_TAM], int W, int H) {
     }
     
     /* Desalocar Memoria  */
-    for(y=0; y<H; y++)
+    for(y=0; y<W; y++)
 	free((int *)aux[y]);
     free((int **)aux);
 
