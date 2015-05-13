@@ -67,10 +67,45 @@ int main(){
     /* Posicionar o AT-TE  */
     for(i=0; i<linhas; i++)
         for(j=0; j<colunas; j++){
-            
-        }
+            droids=0;
+            disparos=0;
+            if(!horizontal[i]){
+                disparos++;
+                droids+=horizontal[i];
+            }
 
-            
+            if(!vertical[j]){
+                disparos++;
+                droids+=vertical[j];
+            }
+
+            if(!diagonal13[i+j]){
+                disparos++;
+                droids+=diagonal13[i+j];
+            }
+
+            if(!diagonal24[i-j+colunas-1]){
+                disparos++;
+                droids+=diagonal24[i-j+colunas-1];
+            }
+
+            if(droids > melhor[2]){
+                melhor[0] = i;
+                melhor[1] = j;
+                melhor[2] = droids;
+                melhor[3] = disparos;
+            }
+            else if(melhor[2] == droids){
+                if(i <melhor[0]){
+                    melhor[0] = i;
+                    melhor[1] = j;
+                    melhor[2] = droids;
+                    melhor[3] = disparos;
+                }
+                else if(j < melhor[1])
+            }
+        }/*for(j=0; j<colunas; j++)*/
+
     /* Desalocar Memoria */    
     for(i=0; i<linhas; i++)
         free(campo[i]);
@@ -112,7 +147,6 @@ int dispDiagonal13(int campo[MAX][MAX],
         l++;
     }
     return droids;
-    
 }
 int dispDiagonal24(int campo[MAX][MAX],
                    int i, int j, int linhas, int colunas){
