@@ -140,15 +140,12 @@ void multiply(int *n1, int tam_n1, int *n2, int tam_n2, int *result) {
 	       deixar o ultimo digito da soma
 	       e colocar o outro digito na proxima posicao
 	    */
-	    for(k=0; k<tam_n1+tam_n2; k++){
-		if(*(result+posR-k) > 9){
-		    *(result+posR-k) = *(result+posR-k)%10;
-		    *(result+posR-1-k) += 1;
-		}else{
-		    break;
-		}
-	    }	    
-	    
+	    for(k=tam_n1+tam_n2-1-i; k>0; k--){
+	      if(*(result+k) > 9){
+		*(result+k) = *(result+k)%10;
+		*(result+k-1) += 1;
+	      }
+	    }
 	    pos1--;
 	    posR--;
 	}
