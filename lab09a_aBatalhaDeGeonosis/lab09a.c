@@ -39,7 +39,7 @@ void printMatriz(int *matriz[MAX], int linhas, int colunas){
 int main(){
     int linhas, colunas;
     int **campo;
-    int *horizontal, *vertical, *diagonal13, *diagonal24;
+    int horizontal, vertical, diagonal13, diagonal24;
     int i, j;
     int disparos, droids;
     /* i, j, droids, disparos */
@@ -54,39 +54,7 @@ int main(){
         for(j=0; j<colunas; j++)
             scanf(" %d", &campo[i][j]);
 
-    horizontal=(int *)malloc(colunas * sizeof(int));
-    vertical=(int *)malloc(linhas * sizeof(int));
-    diagonal13=(int *)malloc((linhas + colunas-1) * sizeof(int));
-    diagonal24=(int *)malloc((linhas + colunas-1) * sizeof(int));
-
     /* Fazer as contas antes de posicionar o AT-TE */
-    for(i=0; i<linhas; i++)
-        horizontal[i] = dispHorizontal(campo,
-                                       i, colunas);    
-    for(i=0; i<colunas; i++)
-        vertical[i] = dispVertical(campo,
-                                   i, linhas);
-  
-    for(j=0; j<colunas; j++)
-        diagonal13[j] = dispDiagonal13(campo,
-                                       0, j, linhas, colunas);
-    for(i=1; i<linhas; i++)
-        diagonal13[colunas-1+i] = dispDiagonal13(campo,
-                                       i, colunas-1, linhas, colunas);
-    
-    for(i=0; i<linhas; i++)
-        diagonal24[i] = dispDiagonal24(campo,
-                                       i, colunas-1, linhas, colunas);
-    for(j=1; j<colunas; j++)
-        diagonal24[linhas-1+j] = dispDiagonal24(campo,
-                                              linhas-1, colunas-1-j,
-                                              linhas, colunas);
-
-    printf("\n");
-    printVetor(diagonal13, linhas+colunas-1);
-    printVetor(diagonal24, linhas+colunas-1);
-    printf("\n");
-    printMatriz(campo, linhas, colunas);
     
     
     /* Posicionar o AT-TE  */
@@ -95,30 +63,33 @@ int main(){
             if(!campo[i][j]){
                 droids=0;
                 disparos=0;
-                if(horizontal[i]){
-                    printf("hor = %d\n",i);
+                /* Calcula a quantidade de droids em cada sentido  */
+                horizontal=dispHorizontal(campo, i, colunas);
+                vertical=dispVertical(campo, j, linhas);
+                diagonal13=dispDiagonal13(campo, i, j, linhas, colunas);
+                diagonal24=dispDiagonal24(campo, i, j, linhas, colunas);
+                if(horizontal){
                     disparos++;
-                    droids+=horizontal[i];
+                    droids+=horizontal;
                 }
 
-                if(vertical[j]){
-                    printf("ver = %d\n",j);
+                if(vertical){
                     disparos++;
-                    droids+=vertical[j];
+                    droids+=vertical;
                 }
 
-                if(diagonal13[i+j]){
-                    printf("d13 = %d\n",i+j);
+                if(diagonal13){
                     disparos++;
-                    droids+=diagonal13[i+j];
+                    droids+=diagonal13;
                 }
 
-                if(diagonal24[i-j+colunas-1]){
-                    printf("d24 = %d\n",i-j+colunas-1);
+                if(diagonal24){
                     disparos++;
-                    droids+=diagonal24[i-j+colunas-1];
+                    droids+=diagonal24;
                 }
 
+                /* Verifica se a posicao atual eh a melhor entre todas
+                   as posicoes */
                 if(droids > melhor[2]){
                     melhor[0] = i;
                     melhor[1] = j;
@@ -126,22 +97,23 @@ int main(){
                     melhor[3] = disparos;
                 }
                 else if(melhor[2] == droids){
-                    if(i <melhor[0]){
+                    if(disparos < melhor[3]){
                         melhor[0] = i;
                         melhor[1] = j;
-                        melhor[2] = droids;
                         melhor[3] = disparos;
                     }
-                    else if(i == melhor[0] && j < melhor[1]){
-                        melhor[1] = j;
-                        melhor[2] = droids;
-                        melhor[3] = disparos;
+                    else if(disparos == melhor[3]){
+                        if(i < melhor[0]){
+                            melhor[0] = i;
+                            melhor[1] = j;
+                        }
+                        else if(i == melhor[0] && j < melhor[1]){
+                            melhor[1] = j;
+                        }
                     }
                 }
-                printVetor(melhor, 4);
             }/*if(!campo[i][j])*/
         }/*for(j=0; j<colunas; j++)*/
-
 
     printf("Posicao = (%d,%d)\n", melhor[0], melhor[1]);
     printf("Droids = %d\n",melhor[2]);
@@ -151,10 +123,6 @@ int main(){
     for(i=0; i<linhas; i++)
         free(campo[i]);
     free(campo);
-    free(horizontal);
-    free(vertical);
-    free(diagonal13);
-    free(diagonal24);
     return 0;
 }
 
@@ -176,32 +144,18 @@ int dispVertical(int *campo[MAX],
 int dispDiagonal13(int *campo[MAX],
                    int i, int j, int linhas, int colunas){
     int k, l, droids=0;
-    k=i+j;
-    l=0;
-    if(k>linhas-1){
-        k=linhas-1;
-        l=i+j-linhas;
-    }
-    while(k>=0 && l<colunas){
+    for(k=i, l=j; k>=0 && l<colunas; k--, l++)
         droids+=campo[k][l];
-        k--;
-        l++;
-    }
+    for(k=i, l=j; k<linhas && l>=0; k++, l--)
+        droids+=campo[k][l];
     return droids;
 }
 int dispDiagonal24(int *campo[MAX],
                    int i, int j, int linhas, int colunas){
     int k, l, droids=0;
-    k=0;
-    l=-(i-j);
-    if(l<0){
-        k=i-j;
-        l=0;
-    }
-    while(k<linhas && l<colunas){
+    for(k=i, l=j; k<linhas && l<colunas; k++, l++)
         droids+=campo[k][l];
-        k++;
-        l++;
-    }
+    for(k=i, l=j; k>=0 && l>=0; k--, l--)
+        droids+=campo[k][l];
     return droids;
 }
