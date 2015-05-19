@@ -1,18 +1,12 @@
 /* Nome: Pedro Hideaki Uiechi Chinen
    RA  : 175828
    Lab 09b - Peladeiros */
+#include <stdio.h>
+#include <stdlib.h>
 
-#define DELTA 0.001
+#define DELTA -0.0001
 
-/*dado um grupo de n jogadores confirmados, os t capitães são definidos com base nas t maiores notas médias atribuídas para cada jogador. 
-Definidos os capitães, inicia-se o processo de escolha alternada entre eles, de tal modo que o primeiro capitão a escolher é o que possui maior nota média, o segundo é o que possui a segunda maior nota média e assim sucessivamente. 
-Tal como dito anteriormente, cada capitão sempre escolhe um jogador, dentre os jogadores ainda não escolhidos, que ele acredita ser o melhor.
-Nesse caso, um capitão C considera um jogador A melhor que um jogador B se a nota atribuída pelo capitão C ao jogador A é maior do que a nota atribuída pelo capitão C ao jogador B.
-Casos de empate, tanto na definição dos capitães quanto na escolha dos jogadores pelos capitães, devem ser resolvidos em favor do jogador com o menor número identificador, isto é, caso os jogadores A e B tenham notas iguais, considera-se que jogador A é melhor que o jogador B se A < B. 
-
-
-*/
-int acharIndiceMaior(float *vetor);
+int acharIndiceMaior(float *vetor, int tam);
 void zerarColuna(float **tabela, int jogador, int jogadores);
 
 int main(){
@@ -27,16 +21,16 @@ int main(){
     tabela=(float **)malloc(jogadores * sizeof(float *));
     for(i=0; i<jogadores; i++)
         tabela[i]=(float *)malloc(jogadores * sizeof(float));
-    media=(float *)malloc(jogadores * sizeof(float));
-    times=(int **)malloc((jogadores/capitoes) * sizeof(int *));
-    for(i=0; i<(jogadores/capitoes); i++)
-        times[i]=(float *)malloc((jogadores/capitoes)
-                                  * sizeof(int));  
-
+    medias=(float *)malloc(jogadores * sizeof(float));
+    times=(int **)malloc(capitoes * sizeof(int *));
+    for(i=0; i<capitoes; i++)
+        times[i]=(int *)malloc((jogadores/capitoes)
+                                  * sizeof(int));
+    
     for(i=0; i<jogadores; i++)
         for(j=0; j<jogadores; j++)
             scanf("%f", &tabela[i][j]);
-    
+
     /* Calcular medias dos jogadores */
     for(j=0; j<jogadores; j++){
         mediaAux=0;
@@ -45,22 +39,41 @@ int main(){
         medias[j]=mediaAux/jogadores;
     }
     
-    /* Escolher os capitoes  */
+    /* Escolher os capitoes
+       Achar o indice e zerar a posicao onde ele estava
+       Para nao ser escolhido novamente*/
     for(i=0; i<capitoes; i++){
-        indice=acheIndiceMaior(medias, jogadores);
+        indice=acharIndiceMaior(medias, jogadores);
         times[i][0]=indice;
-        zerarTabela(tabela, jogador, jogadores);
+        zerarColuna(tabela, indice, jogadores);
+        medias[indice]=-1.0;
     }
 
-    /* Escolher o resto to time */
+    /* Escolher o resto do time */
+    for(i=1; i<jogadores/capitoes; i++){
+        for(j=0; j<capitoes; j++){
+            indice=acharIndiceMaior(tabela[times[j][0]], jogadores);
+            times[j][i]=indice;
+            zerarColuna(tabela, indice, jogadores);
+        }
+    }
     
-    
-    
+
     /* Exibir dados e desalocar memoria  */
-    for(i=0; i<(jogadores/capitoes); i++)
+
+    for(i=0; i<capitoes; i++){
+        printf("Time %d: ",i+1);
+        for(j=0; j<jogadores/capitoes-1; j++){
+            printf("%d ", times[i][j]+1);
+        }
+        printf("%d", times[i][jogadores/capitoes-1]+1);
+        printf("\n");
+    }
+
+    for(i=0; i<capitoes; i++)
         free(times[i]);
     free(times);
-    free(media);
+    free(medias);
     for(i=0; i<jogadores; i++)
         free(tabela[i]);
     free(tabela);
@@ -73,12 +86,12 @@ int acharIndiceMaior(float *vetor, int tam){
         if(vetor[indice]-vetor[i] < DELTA)
             indice=i;
     
-    return indice
+    return indice;
 }
 
 void zerarColuna(float **tabela, int jogador, int jogadores){
-    int i, j;
+    int i;
     for(i=0; i<jogadores; i++)
-        tabela[i][jogador]=0.0;
+        tabela[i][jogador]=-1.0;
     
 }

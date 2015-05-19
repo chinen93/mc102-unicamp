@@ -19,23 +19,6 @@ int dispDiagonal13(int *campo[MAX],
 int dispDiagonal24(int *campo[MAX],
                     int i, int j, int linhas, int colunas);
 
-
-void printVetor(int *vetor, int tam){
-    int i;
-    for(i=0; i<tam; i++)
-        printf("[%d]", vetor[i]);
-    printf("\n");
-}
-void printMatriz(int *matriz[MAX], int linhas, int colunas){
-    int i, j;
-    for(i=0; i<linhas; i++){
-        for(j=0; j<colunas; j++)
-            printf("{%d}",matriz[i][j]);
-        printf("\n");
-    }
-    printf("\n");
-}
-
 int main(){
     int linhas, colunas;
     int **campo;
