@@ -23,8 +23,16 @@ void atualizaPartida(time_t *timeGanhador, time_t *timePerdedor,
 void leResultadosChave(time_t timesChave[], int confrontoDireto[][6]);
 void ordenaTimes(time_t times[], int n, int confrontoDireto[][6]);
 
-int acharTime(char *nome, time_t *time);
-void separaPontos(char *ponto1, char *pontos2, char *pontos);
+
+int acharTime(char *nome, time_t *time, int *timesCriados);
+time_t criarTime(char *nome);
+
+void printTime(time_t *time){
+    printf("%s ", time->nome);
+    printf("%2d ", time->pontos);
+    printf("%2d\n", time->vitorias);
+    
+}
 
 int main() {
    /* variaveis de entrada */
@@ -78,11 +86,10 @@ void atualizaPartida(time_t *timeGanhador, time_t *timePerdedor,
 void leResultadosChave(time_t timesChave[], int confrontoDireto[][6]) {
     /* timesChave, contem os times naquela chave*/
     char time1[21], time2[21];
-    char pontosAll[7], pontos1[7], pontos2[7];
     char teste;
-    int  acabouRes, posicao;
-    int  sets1, sets2, ind1, ind2;
-    int  criarTime, timesCriados=0;
+    int  acabouSets;
+    int  timesCriados=0;
+    int  sets1, sets2, ind1, ind2, pontos1, pontos2;
     int  i, j;
 
     /*le 15 linhas e para a execucao*/
@@ -92,48 +99,98 @@ void leResultadosChave(time_t timesChave[], int confrontoDireto[][6]) {
 
         /*------------------Achar Times no Vetor-----------------------------*/
         scanf("%s", time1);
-        ind1=int acharTime(time1, timesChave);
+        ind1=acharTime(time1, timesChave, &timesCriados);
         
         scanf("%s", time2);
-        ind2=int acharTime(time2, timesChave);
-        /*----------------------Verificar quem ganhou------------------------*/
-        acabouRes=FALSE;
-        for(j=0; j<5 && !acabouRes; j++){
-            scanf("%s", pontosAll);
+        ind2=acharTime(time2, timesChave, &timesCriados);
 
-            printf("[%s] [%s]\n", pontos1, pontos2);
+        /*----------------------Verificar quem ganhou------------------------*/
+        acabouSets=FALSE;
+        sets1=0;
+        sets2=0;
+        for(j=0; j<5 && !acabouSets; j++){
+            scanf("%d-%d%c", &pontos1, &pontos2, &teste);
+
+            printf("[%d] [%d]\n", pontos1, pontos2);
+
+            if(pontos1 > pontos2){
+                /* time 1 ganhou, 2 perdeu SET*/
+                atualizaSetsPontos(&timesChave[ind1], 1, 0, 
+                                   pontos1, pontos2);
+                atualizaSetsPontos(&timesChave[ind2], 0, 1, 
+                                   pontos2, pontos1);
+                sets1++;
+            }else{
+                /* time 2 ganhou, 1 perdeu SET*/
+                atualizaSetsPontos(&timesChave[ind1], 0, 1, 
+                                   pontos1, pontos2);
+                atualizaSetsPontos(&timesChave[ind2], 1, 0, 
+                                   pontos2, pontos1);
+                sets2++;
+            }
             
             /* verifica se eh para sair dos resultados dos jogos  */
-            scanf("%c", &teste);
             if(teste == '\n')
-                acabouRes=TRUE;
+                acabouSets=TRUE;
         }
+        printf("asdasdadas\n");
+        printf("{%d %d}\n", sets1, sets2);
+        printTime(&timesChave[ind1]);
+        printTime(&timesChave[ind2]);
+
+        
+        printf("asdaskdoaska\n");
+        /* quem ganhou a partida e por quantos sets  */
+        if(sets1 > sets2){
+            /* time 1 ganhou, 2 perdeu PARTIDA*/
+            /*            atualizaPartida(&timesChave[ind1], &timesChave[ind2], 
+                          sets1-sets2, confrontoDireto);*/
+        }else{
+            /* time 2 ganhou, 1 perdeu PARTIDA*/
+            /*            atualizaPartida(&timesChave[ind2], &timesChave[ind1], 
+                          sets2-sets1, confrontoDireto);*/
+        }
+        
         printf("-------------------\n");
         /*----------------------Atualizar Registro---------------------------*/
     }
 }
 
-void separaPontos(char *ponto1, char *pontos2, char *pontos){
-    int i;
-    if()
-}
 
-int acharTime(char *nome, time_t *time){
-    int criarTime=TRUE;
+int acharTime(char *nome, time_t *time, int *timesCriados){
+    int existeTime=FALSE;
     int i, indice;
-    for(i=0; i<timesCriados; i++){
-        if(strcmp(timesChave[i].nome, nome)==0){
-            criarTime==FALSE;
-            indice=i;
+
+    /* verifica se o time esta no vetor de times  */
+    for(i=0; i<(*timesCriados); i++){
+        if(strcmp(time[i].nome, nome)==0){
+            return i;
         }
     }
-    if(criarTime){
-        indice=timesCriados;
-        strcpy(timesChave[timesCriados].nome, nome);
-        timesCriados++;
+
+    /* se nao estiver cria o time  */
+    if(!existeTime){
+        indice=(*timesCriados);
+        time[(*timesCriados)]=criarTime(nome);
+        (*timesCriados)++;
     }
 
     return indice;
+}
+
+time_t criarTime(char *nome){
+    time_t retorno;
+    
+    strcpy(retorno.nome, nome);
+    retorno.indice=0;
+    retorno.pontos=0;
+    retorno.vitorias=0;
+    retorno.pontosGanhos=0;
+    retorno.pontosPerdidos=0;
+    retorno.setsGanhos=0;
+    retorno.setsPerdidos=0;
+
+    return retorno;
 }
 
 /* Ordena o vetor de times */
