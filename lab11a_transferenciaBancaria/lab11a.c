@@ -13,12 +13,13 @@
 #define TRUE 1
 #define FALSE 0
 
-#define DELTA 0.001
+#define DELTA -0.0000001
+
 typedef struct{
-  char conta[TAMCONTA];
-  char nome[TAMNOME];
-  char sobrenome[TAMNOME];
-  float saldo;
+    char conta[TAMCONTA];
+    char nome[TAMNOME];
+    char sobrenome[TAMNOME];
+    double saldo;
 } Conta;
 
 Conta lerConta();
@@ -26,77 +27,77 @@ void tranferencia(Conta *banco, int numContas);
 void printConta(Conta conta);
 
 int main(){
-  int numContas, numTransf;
-  Conta *banco;
-  int i, j;
+    int numContas, numTransf;
+    Conta *banco;
+    int i;
 
-  /* Ler dados e alocar memoria*/
-  scanf("%d %d", &numContas, &numTransf);
-  banco=malloc(numContas * sizeof(Conta));
-  for(i=0; i<numContas; i++){
-    banco[i]=lerConta();
-  }
+    /* Ler dados e alocar memoria*/
+    scanf("%d %d", &numContas, &numTransf);
+    banco=malloc(numContas * sizeof(Conta));
+    for(i=0; i<numContas; i++){
+        banco[i]=lerConta();
+    }
 
-  for(i=0; i<numTransf; i++){
-    tranferencia(banco, numContas);
-  }
+    for(i=0; i<numTransf; i++){
+        tranferencia(banco, numContas);
+    }
 
-  /* Escrever resultado  */
-  for(i=0; i<numContas; i++){
-    printConta(banco[i]);
-  }
+    /* Escrever resultado  */
+    for(i=0; i<numContas; i++){
+        printConta(banco[i]);
+    }
   
-  free(banco);
-  return 0;
+    free(banco);
+    return 0;
 }
 
 
 Conta lerConta(){
-  Conta retorno;
+    Conta retorno;
   
-  scanf("%s", retorno.conta);
-  scanf("%s", retorno.nome);
-  scanf("%s", retorno.sobrenome);
-  scanf("%f", &retorno.saldo);
-  printConta(retorno);
-  return retorno;
+    scanf("%s", retorno.conta);
+    scanf("%s", retorno.nome);
+    scanf("%s", retorno.sobrenome);
+    scanf("%lf", &retorno.saldo);
+    return retorno;
 }
 void tranferencia(Conta *banco, int numContas){
-  int  tranferiu=FALSE;
-  char lixo[3];
-  char origem[TAMCONTA], destino[TAMCONTA];
-  float quanto;
-  int i, j;
+    int  tranferiu=FALSE;
+    char lixo[3];
+    char origem[TAMCONTA], destino[TAMCONTA];
+    double quanto;
+    int i, j;
 
-  scanf("%s", origem);
-  scanf("%s", lixo);
-  scanf("%f", &quanto);
-  scanf("%s", lixo);
-  scanf("%s", destino);
-
-  /*
-    TESTE 8 - problema de precisao
-< [53341@2864 ->  266.279999 ->  12866@8834]
-< 53341@2864 Felipe Mendes 266.28
----
-> 53341@2864 Felipe Mendes 0.00
-   */
-
-  printf("\n[%s ->  %f ->  %s]\n", origem, quanto, destino);
-  for(i=0; i<numContas && !tranferiu; i++){
-    if(strcmp(banco[i].conta, origem) == 0 && banco[i].saldo-quanto > DELTA)
-      for(j=0; j<numContas && !tranferiu; j++){
-        if(strcmp(banco[j].conta, destino) == 0){
-          tranferiu=TRUE;
-          banco[j].saldo+=quanto;
-          banco[i].saldo-=quanto;
+    scanf("%s", origem);
+    scanf("%s", lixo);
+    scanf("%lf", &quanto);
+    scanf("%s", lixo);
+    scanf("%s", destino);
+    
+    for(i=0; i<numContas && !tranferiu; i++){
+        /* percorre as conta bancarias para ver se o endereco de origem existe
+           e tem saldo maior que a quantidade tranferida*/
+        if(strcmp(banco[i].conta, origem) == 0){
+            if(banco[i].saldo-quanto >= DELTA){
+                /* verifica se a conta de destino existe */
+                for(j=0; j<numContas && !tranferiu; j++){
+                    if(strcmp(banco[j].conta, destino) == 0){
+                        tranferiu=TRUE;
+                        banco[j].saldo+=quanto;
+                        banco[i].saldo-=quanto;
+                    }
+                }
+            }else{
+                /* tranferencia nao ocorrera pois a 
+                   origem nao tem o dinheiro  */
+                tranferiu=TRUE;
+            }
         }
-      }
-  }
+    }
 }
 void printConta(Conta conta){
-  printf("%s ",conta.conta);
-  printf("%s ",conta.nome);
-  printf("%s ",conta.sobrenome);
-  printf("%.2f\n",conta.saldo);
+    printf("%s ",conta.conta);
+    printf("%s ",conta.nome);
+    printf("%s ",conta.sobrenome);
+    printf("%.2lf\n",conta.saldo);
 }
