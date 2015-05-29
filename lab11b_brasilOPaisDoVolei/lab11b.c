@@ -25,11 +25,11 @@ void ordenaTimes(time_t times[], int n, int confrontoDireto[][6]);
 
 
 int acharTime(char *nome, time_t *time, int *timesCriados);
-time_t criarTime(char *nome);
+time_t criarTime(char *nome, int indice);
 
 void printTime(time_t *time){
     printf("%s ", time->nome);
-    printf("%2d ", time->pontos);
+    printf("%2d ", time->pontosGanhos);
     printf("%2d\n", time->vitorias);
     
 }
@@ -110,9 +110,6 @@ void leResultadosChave(time_t timesChave[], int confrontoDireto[][6]) {
         sets2=0;
         for(j=0; j<5 && !acabouSets; j++){
             scanf("%d-%d%c", &pontos1, &pontos2, &teste);
-
-            printf("[%d] [%d]\n", pontos1, pontos2);
-
             if(pontos1 > pontos2){
                 /* time 1 ganhou, 2 perdeu SET*/
                 atualizaSetsPontos(&timesChave[ind1], 1, 0, 
@@ -133,26 +130,17 @@ void leResultadosChave(time_t timesChave[], int confrontoDireto[][6]) {
             if(teste == '\n')
                 acabouSets=TRUE;
         }
-        printf("asdasdadas\n");
-        printf("{%d %d}\n", sets1, sets2);
-        printTime(&timesChave[ind1]);
-        printTime(&timesChave[ind2]);
 
-        
-        printf("asdaskdoaska\n");
         /* quem ganhou a partida e por quantos sets  */
         if(sets1 > sets2){
             /* time 1 ganhou, 2 perdeu PARTIDA*/
-            /*            atualizaPartida(&timesChave[ind1], &timesChave[ind2], 
-                          sets1-sets2, confrontoDireto);*/
+            atualizaPartida(&timesChave[ind1], &timesChave[ind2], 
+                          sets1-sets2, confrontoDireto);
         }else{
             /* time 2 ganhou, 1 perdeu PARTIDA*/
-            /*            atualizaPartida(&timesChave[ind2], &timesChave[ind1], 
-                          sets2-sets1, confrontoDireto);*/
+            atualizaPartida(&timesChave[ind2], &timesChave[ind1], 
+                          sets2-sets1, confrontoDireto);
         }
-        
-        printf("-------------------\n");
-        /*----------------------Atualizar Registro---------------------------*/
     }
 }
 
@@ -171,18 +159,18 @@ int acharTime(char *nome, time_t *time, int *timesCriados){
     /* se nao estiver cria o time  */
     if(!existeTime){
         indice=(*timesCriados);
-        time[(*timesCriados)]=criarTime(nome);
+        time[(*timesCriados)]=criarTime(nome, indice);
         (*timesCriados)++;
     }
 
     return indice;
 }
 
-time_t criarTime(char *nome){
+time_t criarTime(char *nome, int indice){
     time_t retorno;
     
     strcpy(retorno.nome, nome);
-    retorno.indice=0;
+    retorno.indice=indice;
     retorno.pontos=0;
     retorno.vitorias=0;
     retorno.pontosGanhos=0;
@@ -195,5 +183,18 @@ time_t criarTime(char *nome){
 
 /* Ordena o vetor de times */
 void ordenaTimes(time_t times[], int n, int confrontoDireto[][6]) {
+    int i, j, indMelhor;
+    for(i=0; i<n; i++){
+        indMelhor=i;
+        for(j=i+1; j<n; j++){
+            /* verifica casos de ranking  */
+            /* Pontos,  numVitorias, razaoSets, razaoPontos, confrontoDireto */
+        }
+        
+        if(indMelhor != i){
+            /* troca */
+        }
+    }
+    
 
 }
