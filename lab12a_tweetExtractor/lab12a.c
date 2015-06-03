@@ -40,21 +40,6 @@ void converte_entidade(FILE *arqin, FILE *arqout) {
         fprintf(arqout, "\"");
 }
 
-void printString(char *lido){
-    int i;
-    printf("[");
-    for(i=0; i<TAM; i++){
-        if(lido[i]=='\n'){
-            printf("{N}");
-        }else if(lido[i]=='\0'){
-            printf("{0}");
-        }else{
-            printf("%c", lido[i]);
-        }
-    }
-    printf("]\n");
-}
-
 void limparString(char *lido){
     int i;
     for(i=0; i<TAM; i++)
@@ -64,36 +49,31 @@ void limparString(char *lido){
 void extrai_tweets(char nomearqin[], char nomearqout[]) {
     FILE *arqIn, *arqOut;
     char texto[] = "      <p class=\"ProfileTweet-text js-tweet-text u-dir\"\n";
-    char lido[TAM], cAtual, cAnte;
+    char lido[TAM], cAtual, cAnte, cAnteAnte;
     int noTweet, temBarraN;
+    int i;
     
     arqIn=fopen(nomearqin, "r");
     arqOut=fopen(nomearqout, "w+");
     
     /* Se os arquivos foram abertos corretamente */
     if(arqIn != NULL && arqOut != NULL){ 
-        printf("%s\n", texto);
-        
-        printf("achou os arquivos\n");
         limparString(lido);
 
-
-        /*         
-                   LENDO ECA PORRA ERRADO
-         */
-
-        
         while(fgets(lido, TAM, arqIn) != NULL){
             /* ler caracteres do comeco da linha ate que o arquivo acabe */
             /* verificar se sao os caracteres que quero */
             
-            printString(lido);
+            /*printString(lido);*/
             
             if(strcmp(lido, texto) != 0){
                 /* se nao for, ler a linha ate o '\n' */
                 temBarraN=FALSE;
-                if(lido[TAM-1] == '\n')
-                    temBarraN=TRUE;
+                for(i=0; i<TAM; i++)
+                    if(lido[i] == '\n'){
+                        temBarraN=TRUE;
+                        break;
+                    }
                 
                 if(!temBarraN){ 
                     cAtual=fgetc(arqIn);
@@ -107,7 +87,6 @@ void extrai_tweets(char nomearqin[], char nomearqout[]) {
             }else{
                 /* se for, ler os proximos caracteres um a um ate achar <\p> */
                 noTweet=TRUE;
-                printf("achou o tweet - ");
                 
                 /* Achar o comeco do Tweet */
                 while(cAtual != '>'){
@@ -121,26 +100,23 @@ void extrai_tweets(char nomearqin[], char nomearqout[]) {
                        pegar o proximo caracter nao deixando com o '>'*/
                     if(cAtual == '<'){
                         while(cAtual != '>'){
+                            cAnteAnte=cAnte;
                             cAnte=cAtual;
                             cAtual=fgetc(arqIn);
-                            if(cAtual=='p' && cAnte=='/'){
-                                printf(" - sair do tweet\n");
+                            if(cAtual == 'p' && cAnte == '/' && cAnteAnte=='<'){
                                 noTweet=FALSE;
                                 fprintf(arqOut, "\n");
                             }
                         }
                     }
                     
-                    /* verificar se eh & 
-                        se for, aplicar a funcao especial 
-                        se nao for, imprimir normal  */
-                    /*if(cAtual=='&'){
-                        converte_entidade(arqIn, arqOut);
-                    }else{
-                    }*/
-                    if(cAtual!='\n' && cAtual!='>'){
-                        fprintf(arqOut, "%c", cAtual);
-                        printf("%c", cAtual);
+                    /* verificar se eh & */
+                    if(cAtual != '\n' && cAtual != '>'){
+                        if(cAtual == '&'){
+                            converte_entidade(arqIn, arqOut);
+                        }else{
+                            fprintf(arqOut, "%c", cAtual);
+                        }
                     }
                 }
             }
